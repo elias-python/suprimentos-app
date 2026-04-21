@@ -201,3 +201,7 @@ with app.app_context():
 # ── RUN ─────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     app.run(debug=True, port=5050, host='0.0.0.0')
+
+@app.route('/')
+def index():
+    return "Sistema rodando OK"
