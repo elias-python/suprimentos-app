@@ -92,36 +92,6 @@ class Programacao(db.Model):
         }
 
 
-# ── DADOS (mantidos iguais) ─────────────────────────────────────────────────
-ORIGENS = [
-    'Az. Multitrans Matriz', 'Az. Multitrans 3', 'Az. Fortesolo',
-    'Az. Rocha Fidelidade', 'Az. Rocha Margarida', 'Az. Rocha Praça',
-    'Az. Rocha Brascargo', 'Az. Fertiservice 1', 'Az. Fertiservice 2',
-    'Az. Sulmare', 'Az. Faz', 'Az. AEC33', 'Fábrica Fospar',
-    'Toll Coonagro', 'Cais Comercial', 'Terminal Fospar'
-]
-
-DESTINOS = [
-    'Mosaic 1', 'Mosaic 2', 'Az. Multitrans Matriz', 'Az. Multitrans 3',
-    'Az. Fortesolo', 'Az. Rocha Fidelidade', 'Az. Rocha Margarida',
-    'Az. Rocha Praça', 'Az. Fertiservice 1', 'Az. Fertiservice 2',
-    'Fábrica Fospar', 'Toll Coonagro'
-]
-
-OPERACOES = [
-    'Retorno de armazenagem', 'Transferência', 'Entrada direta',
-    'Venda', 'Devolução', 'Remessa para industrialização',
-    'Remessa de retorno de industrialização'
-]
-
-TRANSPORTADORAS = [
-    'Copadubo', 'Tico Transportes', 'Logic', 'TransBrasil',
-    'Rodoviário Sul', 'Agrocargo', 'Fertrans'
-]
-
-TIPOS_VEICULO = ['Carreta', 'Truck', 'Caminhão Bau', 'Caminhão Toco', 'Bitrem']
-
-
 # ── SMTP FUNCTION ───────────────────────────────────────────────────────────
 def enviar_email_smtp(html_body, data_fmt):
     msg = MIMEMultipart("alternative")
@@ -142,7 +112,7 @@ def enviar_email_smtp(html_body, data_fmt):
         server.sendmail(SMTP_FROM, destinatarios, msg.as_string())
 
 
-# ── HTML EMAIL BUILDER (mantido igual) ───────────────────────────────────────
+# ── EMAIL HTML ──────────────────────────────────────────────────────────────
 def _build_email_html(registros, data_ref, extra_obs=""):
     data_fmt = datetime.strptime(data_ref, '%Y-%m-%d').strftime('%d/%m/%Y')
 
@@ -167,9 +137,14 @@ def _build_email_html(registros, data_ref, extra_obs=""):
         <h2>Programação - {data_fmt}</h2>
         <table border="1" cellpadding="5">
             <tr>
-                <th>Data</th><th>Origem</th><th>Destino</th>
-                <th>MP</th><th>Cód</th><th>Qtd</th>
-                <th>Volume</th><th>Status</th>
+                <th>Data</th>
+                <th>Origem</th>
+                <th>Destino</th>
+                <th>MP</th>
+                <th>Cód</th>
+                <th>Qtd</th>
+                <th>Volume</th>
+                <th>Status</th>
             </tr>
             {linhas}
         </table>
@@ -178,12 +153,11 @@ def _build_email_html(registros, data_ref, extra_obs=""):
     """
 
 
-# ── API SEND EMAIL (SMTP ONLY) ──────────────────────────────────────────────
+# ── ROTAS ───────────────────────────────────────────────────────────────────
 @app.route('/api/enviar-email', methods=['POST'])
 def enviar_email():
     payload = request.json or {}
     data_ref = payload.get('data')
-    extra_obs = payload.get('obs', '')
     ids_selecionados = payload.get('ids')
 
     if not data_ref:
@@ -205,7 +179,7 @@ def enviar_email():
         return jsonify({'success': False, 'error': 'Sem dados'}), 404
 
     registros_dict = [r.to_dict() for r in registros]
-    html_body = _build_email_html(registros_dict, data_ref, extra_obs)
+    html_body = _build_email_html(registros_dict, data_ref)
     data_fmt = d.strftime('%d/%m/%Y')
 
     try:
