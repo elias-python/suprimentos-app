@@ -3,12 +3,21 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
 import json
 import platform
+import os
+
+import os
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///suprimentos.db")
+
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://")
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suprimentos.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'suprimentos_secret_2026'
 db = SQLAlchemy(app)
+
 
 # ── DESTINATÁRIOS DO EMAIL ─────────────────────────────────────────────────────
 EMAIL_DESTINATARIOS = [
@@ -537,7 +546,7 @@ def init_db():
 
             if Programacao.query.count() == 0:
                 seed_data()
-                
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True, port=5050, host='0.0.0.0')
