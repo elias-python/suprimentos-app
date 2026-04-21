@@ -542,4 +542,5 @@ def enviar_email():
 
 with app.app_context():
     db.create_all()
-    seed_data()
+    if Programacao.query.count() == 0:
+        seed_data()
