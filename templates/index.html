@@ -221,282 +221,239 @@ tr:hover td{background:rgba(255,255,255,.015);}
   padding:18px 22px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
 }
-.modal-header h2{font-size:16px;font-weight:700;}
-
-/* Cabeçalho vermelho para o modal de cancelamento */
-.modal-header-cancel{
-  padding:18px 22px;
-  background:linear-gradient(135deg,rgba(139,0,0,.4),rgba(192,57,43,.25));
-  border-bottom:1px solid rgba(239,68,68,.3);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.modal-header-cancel h2{font-size:16px;font-weight:700;color:#ff6b6b;}
-
+.modal-header h2{font-size:17px;font-weight:700;}
 .modal-close{
-  background:none;border:none;color:var(--text-muted);font-size:20px;
-  cursor:pointer;width:30px;height:30px;border-radius:5px;
-  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;color:var(--text-muted);font-size:24px;
+  cursor:pointer;transition:color .15s;line-height:1;
 }
-.modal-close:hover{background:var(--surface2);color:var(--text);}
-.modal-body{padding:22px;overflow-y:auto;flex:1;}
-.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
-
-/* Rodapé com borda vermelha para cancelamento */
-.modal-footer-cancel{
-  padding:14px 22px;
-  border-top:1px solid rgba(239,68,68,.25);
-  background:rgba(139,0,0,.08);
-  display:flex;justify-content:flex-end;gap:8px;
-}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:22px;flex:1;overflow-y:auto;}
+.modal-footer{padding:16px 22px;background:var(--surface2);border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
 
 /* ── FORM ── */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.f-full{grid-column:1/-1;}
-.form-group{display:flex;flex-direction:column;gap:5px;}
-.form-label{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{margin-bottom:2px;}
+.f-full{grid-column:span 2;}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
 .form-ctrl{
-  background:var(--surface2);border:1px solid var(--border);color:var(--text);
-  border-radius:6px;padding:8px 11px;font-family:var(--sans);font-size:13px;
-  outline:none;transition:border-color .15s;width:100%;
+  width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  border-radius:6px;padding:9px 12px;font-family:var(--sans);font-size:13px;outline:none;
+  transition:all .15s;
 }
-.form-ctrl:focus{border-color:var(--accent);}
-.form-ctrl option{background:var(--surface2);}
-.form-ctrl[readonly]{opacity:.6;}
-textarea.form-ctrl{resize:vertical;min-height:70px;}
-.cb-row{display:flex;align-items:center;gap:8px;margin-top:3px;}
-.cb-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;}
-.cb-row label{font-size:13px;cursor:pointer;}
-.form-divider{
-  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--text-muted);border-bottom:1px solid var(--border);
-  padding-bottom:7px;margin:18px 0 4px;grid-column:1/-1;
-}
-
-/* ── DETALHE ── */
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.det{background:var(--surface2);border-radius:6px;padding:11px 13px;}
-.det-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
-.det-val{font-size:13px;font-weight:500;}
-.det.full{grid-column:1/-1;}
-
-/* ── EMAIL MODAL ── */
-.email-preview{
-  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
-  padding:14px;font-size:12px;color:var(--text-muted);margin-bottom:14px;
-}
-.email-preview strong{color:var(--text);}
-.email-dest-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.chip{
-  background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.25);
-  color:var(--accent);border-radius:20px;font-size:11px;
-  font-family:var(--mono);padding:2px 10px;
-}
-.chip.cc{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.25);color:var(--blue);}
-.email-rows-preview{
-  background:var(--surface2);border:1px solid var(--border);border-radius:6px;
-  max-height:180px;overflow-y:auto;margin-bottom:14px;
-}
-.erp-row{
-  display:flex;align-items:center;gap:8px;padding:7px 12px;
-  border-bottom:1px solid var(--border);font-size:12px;
-}
-.erp-row:last-child{border-bottom:none;}
-.erp-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;}
-.erp-dot.urg{background:var(--danger);box-shadow:0 0 6px var(--danger);}
-.erp-info{flex:1;}
-.erp-mp{font-family:var(--mono);font-size:11px;color:var(--accent);}
-.erp-rota{font-size:11px;color:var(--text-muted);}
-.erp-vol{font-family:var(--mono);font-size:11px;color:var(--text-muted);white-space:nowrap;}
-
-/* ── URGENTES BANNER ── */
-.urg-banner{
-  background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);
-  border-radius:var(--r);padding:14px 18px;margin-bottom:18px;
-  display:flex;align-items:center;gap:12px;
-}
-.urg-banner-icon{font-size:22px;}
-.urg-banner-title{font-weight:700;color:var(--danger);font-size:14px;}
-.urg-banner-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
-
-/* ── CANCEL CONFIRM MODAL ── */
-.cancel-body{text-align:center;padding:8px 0 4px;}
-.cancel-icon{font-size:52px;margin-bottom:14px;display:block;
-  animation:shake .5s ease .1s;}
-@keyframes shake{
-  0%,100%{transform:rotate(0)}
-  20%{transform:rotate(-6deg)}
-  40%{transform:rotate(6deg)}
-  60%{transform:rotate(-4deg)}
-  80%{transform:rotate(4deg)}
-}
-.cancel-title{font-size:18px;font-weight:800;color:#ff6b6b;margin-bottom:6px;}
-.cancel-sub{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:20px;}
-.cancel-info-box{
-  background:rgba(139,0,0,.15);border:1px solid rgba(239,68,68,.25);
-  border-radius:8px;padding:12px 16px;margin-bottom:16px;text-align:left;
-}
-.cancel-info-box .ci-row{
-  display:flex;gap:8px;font-size:12px;margin-bottom:5px;
-}
-.cancel-info-box .ci-row:last-child{margin-bottom:0;}
-.cancel-info-box .ci-label{color:var(--text-muted);min-width:80px;}
-.cancel-info-box .ci-val{color:var(--text);font-weight:600;font-family:var(--mono);}
-.cancel-warning{
-  background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);
-  border-radius:6px;padding:9px 13px;font-size:11px;color:var(--warn);
-  display:flex;align-items:center;gap:7px;
-}
+.form-ctrl:focus{border-color:var(--accent);background:var(--surface3);}
+.form-ctrl:read-only{opacity:.6;cursor:not-allowed;}
+textarea.form-ctrl{resize:vertical;min-height:80px;}
+.form-divider{grid-column:span 2;padding:12px 0 4px;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.cb-row{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:8px 0;}
+.cb-row input{width:16px;height:16px;accent-color:var(--accent);}
+.cb-row label{font-size:13px;font-weight:600;color:var(--text);cursor:pointer;}
 
 /* ── TOAST ── */
-.toast-container{position:fixed;bottom:20px;right:20px;z-index:400;display:flex;flex-direction:column;gap:8px;}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:1000;display:flex;flex-direction:column;gap:10px;}
 .toast{
-  background:var(--surface);border:1px solid var(--border);border-radius:8px;
-  padding:11px 16px;font-size:13px;font-weight:500;
-  display:flex;align-items:center;gap:9px;box-shadow:var(--shadow);
-  animation:tin .28s ease;min-width:240px;
+  background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);
+  padding:14px 20px;border-radius:8px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:12px;min-width:300px;
+  transform:translateX(120%);transition:transform .3s cubic-bezier(.18,.89,.32,1.28);
 }
-.toast.ok{border-left:3px solid var(--success);}
-.toast.err{border-left:3px solid var(--danger);}
-.toast.info{border-left:3px solid var(--blue);}
-/* Toast especial para cancelamento */
-.toast.cancel{
-  border-left:3px solid #c0392b;
-  background:linear-gradient(135deg,#1a0a0a,#1e1010);
-  border-color:rgba(192,57,43,.4);
-}
-@keyframes tin{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:translateX(0)}}
+.toast.show{transform:translateX(0);}
+.toast-icon{font-size:18px;}
+.toast-msg{font-size:13px;font-weight:500;}
+.toast-err{border-left-color:var(--danger);}
+.toast-cancel{border-left-color:var(--danger);background:rgba(239,68,68,.05);}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:var(--border2);}
+/* ── DASHBOARD EXTRAS ── */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.det{padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;}
+.det.full{grid-column:span 2;}
+.det-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;}
+.det-val{font-size:14px;font-weight:500;}
 
-@media(max-width:860px){
-  .sidebar{width:56px;}
-  .logo-text,.logo-sub,.nav-item span:not(.icon),.nav-section,.sidebar-footer,.nav-badge{display:none;}
-  .logo{justify-content:center;padding:14px 0;}
-  .logo-icon{margin:0 auto;}
-  .nav-item{justify-content:center;padding:10px;}
-  .main{margin-left:56px;}
+/* ── CANCEL MODAL ── */
+.modal-header-cancel{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(239,68,68,.1);}
+.modal-header-cancel h2{font-size:17px;font-weight:700;color:var(--danger);}
+.cancel-body{text-align:center;padding:10px 0;}
+.cancel-icon{font-size:48px;margin-bottom:14px;display:block;}
+.cancel-title{font-size:18px;font-weight:700;margin-bottom:8px;}
+.cancel-sub{font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:20px;}
+.cancel-info-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:left;margin-bottom:20px;}
+.ci-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;}
+.ci-label{color:var(--text-muted);}
+.ci-val{font-weight:600;font-family:var(--mono);}
+.cancel-warning{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:10px 14px;display:flex;gap:10px;align-items:center;text-align:left;font-size:12px;color:var(--warn);}
+.modal-footer-cancel{padding:16px 22px;background:var(--surface2);border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
+
+/* ── EMAIL MODAL ── */
+.email-preview{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px;font-size:12px;}
+.email-dest-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.email-chip{background:var(--surface3);border:1px solid var(--border2);border-radius:4px;padding:2px 8px;font-family:var(--mono);font-size:10px;color:var(--accent);}
+.email-rows-preview{max-height:150px;overflow-y:auto;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px;margin-bottom:16px;}
+.erp-row{padding:8px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:11px;}
+.erp-row:last-child{border-bottom:none;}
+.erp-main{font-weight:600;}
+.erp-sub{color:var(--text-muted);font-family:var(--mono);font-size:10px;}
+
+/* ── RESPONSIVO ── */
+@media (max-width:900px){
+  .sidebar{width:60px;}
+  .logo-text,.logo-sub,.nav-item span:not(.icon),.nav-section,.nav-badge,.sidebar-footer{display:none;}
+  .main{margin-left:60px;}
   .charts-row{grid-template-columns:1fr;}
+}
+@media (max-width:600px){
   .form-grid{grid-template-columns:1fr;}
-  .detail-grid{grid-template-columns:1fr;}
+  .f-full{grid-column:span 1;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
 <aside class="sidebar">
   <div class="logo">
     <div class="logo-icon">🌱</div>
     <div>
-      <div class="logo-text">Mosaic Supply Chain</div>
-      <div class="logo-sub">Suprimentos · MP</div>
+      <div class="logo-text">MOSAIC</div>
+      <div class="logo-sub">SUPPLY CHAIN</div>
     </div>
   </div>
-
+  
   <nav class="nav">
     <div class="nav-section">Principal</div>
-    <button class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">
-      <span class="icon">📊</span><span>Dashboard</span>
+    <button class="nav-item active" onclick="showPage('dashboard')">
+      <span class="icon">📊</span>
+      <span>Dashboard</span>
     </button>
-    <button class="nav-item" data-page="programacoes" onclick="showPage('programacoes',this)">
-      <span class="icon">📋</span><span>Programações</span>
+    <button class="nav-item" onclick="showPage('programacoes')">
+      <span class="icon">📅</span>
+      <span>Programações</span>
     </button>
-    <button class="nav-item" data-page="urgentes" onclick="showPage('urgentes',this)">
-      <span class="icon">🚨</span><span>Urgentes</span>
-      <span class="nav-badge" id="urg-count" style="display:none">0</span>
+    <button class="nav-item" onclick="showPage('urgentes')">
+      <span class="icon">🚨</span>
+      <span>Urgentes</span>
+      <span class="nav-badge" id="urg-badge">0</span>
+    </button>
+
+    <div class="nav-section">Ações</div>
+    <button class="nav-item" onclick="openModal()">
+      <span class="icon">➕</span>
+      <span>Nova Programação</span>
+    </button>
+    <button class="nav-item" onclick="openEmailModal()">
+      <span class="icon">✉</span>
+      <span>Enviar por Email</span>
     </button>
   </nav>
 
   <div class="sidebar-footer">
-    <div class="sidebar-date" id="sb-date"></div>
+    <div class="sidebar-date" id="sidebar-clock">--:--:--</div>
+    <div class="sidebar-date" id="sidebar-date">--/--/----</div>
   </div>
 </aside>
 
-<!-- ══ MAIN ══════════════════════════════════════════════════════════════════ -->
 <main class="main">
-  <div class="topbar">
+  <header class="topbar">
     <div class="topbar-left">
-      <span class="topbar-title" id="page-title">Dashboard</span>
-      <span class="topbar-badge" id="topbar-badge"></span>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div class="topbar-badge">v2.4.0</div>
     </div>
     <div class="topbar-right">
-      <button class="btn btn-email" onclick="openEmailModal()">✉ Enviar por Email</button>
-      <button class="btn btn-primary" onclick="openModal()">+ Nova Programação</button>
+      <button class="btn btn-primary" onclick="openModal()">
+        <span>➕</span> Nova Programação
+      </button>
     </div>
-  </div>
+  </header>
 
   <div class="content">
-
+    
     <!-- ── DASHBOARD ────────────────────────────────────────────────────── -->
     <div class="page active" id="page-dashboard">
-      <div class="kpi-grid" id="kpi-grid">
-        <div class="loading">Carregando indicadores…</div>
-      </div>
-      <div class="charts-row" id="charts-row">
-        <div class="chart-card">
-          <div class="chart-title">Por Operação</div>
-          <div id="chart-op"></div>
+      <div class="kpi-grid">
+        <div class="kpi c-teal">
+          <div class="kpi-label">Total Geral</div>
+          <div class="kpi-value" id="kpi-total">0</div>
+          <div class="kpi-sub">registros na base</div>
         </div>
+        <div class="kpi c-yellow">
+          <div class="kpi-label">Pendentes</div>
+          <div class="kpi-value" id="kpi-pendentes">0</div>
+          <div class="kpi-sub">aguardando ação</div>
+        </div>
+        <div class="kpi c-blue">
+          <div class="kpi-label">Em Andamento</div>
+          <div class="kpi-value" id="kpi-andamento">0</div>
+          <div class="kpi-sub">processando agora</div>
+        </div>
+        <div class="kpi c-green">
+          <div class="kpi-label">Confirmados</div>
+          <div class="kpi-value" id="kpi-confirmados">0</div>
+          <div class="kpi-sub">fluxo concluído</div>
+        </div>
+        <div class="kpi c-red">
+          <div class="kpi-label">Urgentes</div>
+          <div class="kpi-value" id="kpi-urgentes">0</div>
+          <div class="kpi-sub">atenção imediata</div>
+        </div>
+        <div class="kpi c-orange">
+          <div class="kpi-label">Hoje</div>
+          <div class="kpi-value" id="kpi-hoje">0</div>
+          <div class="kpi-sub" id="kpi-hoje-date">--/--</div>
+        </div>
+        <div class="kpi c-purple">
+          <div class="kpi-label">Volume Total</div>
+          <div class="kpi-value" id="kpi-volume">0</div>
+          <div class="kpi-sub">toneladas programadas</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
         <div class="chart-card">
           <div class="chart-title">Top Destinos</div>
-          <div id="chart-dest"></div>
+          <div id="chart-destinos"></div>
         </div>
         <div class="chart-card">
-          <div class="chart-title">Por Transportadora</div>
+          <div class="chart-title">Por Operação</div>
+          <div id="chart-operacoes"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Transportadoras</div>
           <div id="chart-transp"></div>
         </div>
       </div>
+    </div>
+
+    <!-- ── LISTAGEM ─────────────────────────────────────────────────────── -->
+    <div class="page" id="page-programacoes">
+      <div class="section-header">
+        <div class="section-title">Filtros de Busca</div>
+        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Limpar Filtros</button>
+      </div>
+
+      <div class="filters">
+        <input type="date" class="fi" id="f-data" onchange="loadProgramacoes()">
+        <select class="fs" id="f-orig" onchange="loadProgramacoes()">
+          <option value="">Origem: Todas</option>
+          {% for o in origens %}<option>{{ o }}</option>{% endfor %}
+        </select>
+        <select class="fs" id="f-dest" onchange="loadProgramacoes()">
+          <option value="">Destino: Todos</option>
+          {% for d in destinos %}<option>{{ d }}</option>{% endfor %}
+        </select>
+        <select class="fs" id="f-status" onchange="loadProgramacoes()">
+          <option value="">Status: Todos</option>
+          <option>Pendente</option><option>Em andamento</option>
+          <option>Confirmado</option><option>Cancelado</option>
+        </select>
+        <div class="filter-spacer"></div>
+        <div class="count-label" id="table-count">Mostrando 0 registros</div>
+      </div>
 
       <div class="table-wrap">
-        <div class="table-title-bar">
-          <span>Programações Recentes</span>
-          <button class="btn btn-ghost btn-sm" onclick="showPage('programacoes',document.querySelector('[data-page=programacoes]'))">Ver todas →</button>
-        </div>
         <table>
           <thead>
             <tr>
               <th>Data</th><th>Rota</th><th>Produto</th>
-              <th>Qtd / Tipo</th><th>Vol.</th><th>Operação</th><th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="dash-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ── PROGRAMAÇÕES ──────────────────────────────────────────────────── -->
-    <div class="page" id="page-programacoes">
-      <div class="filters">
-        <input type="date" class="fi" id="f-data" onchange="loadProgramacoes()" title="Filtrar por data">
-        <select class="fs" id="f-orig-f" onchange="loadProgramacoes()">
-          <option value="">Todas as origens</option>
-          {% for o in origens %}<option>{{ o }}</option>{% endfor %}
-        </select>
-        <select class="fs" id="f-dest-f" onchange="loadProgramacoes()">
-          <option value="">Todos os destinos</option>
-          {% for d in destinos %}<option>{{ d }}</option>{% endfor %}
-        </select>
-        <select class="fs" id="f-status-f" onchange="loadProgramacoes()">
-          <option value="">Todos os status</option>
-          <option>Pendente</option><option>Em andamento</option>
-          <option>Confirmado</option><option>Cancelado</option>
-        </select>
-        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">✕ Limpar</button>
-        <span class="filter-spacer"></span>
-        <span class="count-label" id="count-lbl"></span>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th><th>Origem</th><th>Destino</th><th>Produto</th>
-              <th>Qtd/Veíc.</th><th>Vol. (t)</th><th>Pedido / Item</th>
-              <th>Operação</th><th>Status</th><th>Ações</th>
+              <th>Qtd</th><th>Transportadora</th><th>Operação</th><th>Status</th><th>Ações</th>
             </tr>
           </thead>
           <tbody id="prog-tbody"><tr><td colspan="10" class="loading">Carregando…</td></tr></tbody>
@@ -756,249 +713,76 @@ textarea.form-ctrl{resize:vertical;min-height:70px;}
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeEmailModal()">Cancelar</button>
-      <button class="btn btn-email" id="btn-send-email" onclick="enviarEmail()" disabled>
-        ✉ Enviar pelo Outlook
-      </button>
+      <button class="btn btn-email" id="btn-send-email" onclick="enviarEmailLote()">🚀 Enviar Email Agora</button>
     </div>
   </div>
 </div>
 
-<!-- ══ TOASTS ═════════════════════════════════════════════════════════════════ -->
-<div class="toast-container" id="toasts"></div>
+<div class="toast-container" id="toast-container"></div>
 
 <script>
-'use strict';
-
-// ── ESTADO GLOBAL ─────────────────────────────────────────────────────────────
 let currentPage = 'dashboard';
 let editingId   = null;
 let detailId    = null;
+let _cancelPayload  = null;
+let _cancelSnapshot = null;
 
-// Payload pendente do cancelamento (usado pelo modal de confirmação)
-let _cancelPayload   = null;
-let _cancelSnapshot  = null; // dados resumidos para exibir no modal
+// Dados injetados pelo Flask (Simulação para preview se necessário, mas aqui usaremos as rotas)
+const DESTINATARIOS = {{ email_destinatarios|tojson }};
+const CC            = {{ email_cc|tojson }};
 
-const DESTINATARIOS = {{ email_destinatarios | tojson | safe }};
-const CC_LISTA      = {{ email_cc | tojson | safe }};
+function showPage(p) {
+  currentPage = p;
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event?.currentTarget?.classList.add('active');
+  
+  const titles = {dashboard:'Dashboard', programacoes:'Programações', urgentes:'Urgentes'};
+  document.getElementById('page-title').innerText = titles[p];
 
-// ── DATA / HORA ───────────────────────────────────────────────────────────────
-const now = new Date();
-document.getElementById('sb-date').innerHTML =
-  now.toLocaleDateString('pt-BR',{weekday:'long'})+' &bull; '+
-  now.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
-
-// ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────────
-function showPage(name, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  if (el) el.classList.add('active');
-  currentPage = name;
-  const titles = {dashboard:'Dashboard', programacoes:'Programações de MP', urgentes:'Urgentes'};
-  document.getElementById('page-title').textContent = titles[name] || name;
-  document.getElementById('topbar-badge').textContent = '';
-  if (name === 'dashboard')     loadDashboard();
-  else if (name === 'programacoes') loadProgramacoes();
-  else if (name === 'urgentes') loadUrgentes();
+  if(p==='dashboard') loadDashboard();
+  if(p==='programacoes') loadProgramacoes();
+  if(p==='urgentes') loadUrgentes();
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function statusBadge(s) {
-  const map = {
-    'Pendente':'b-pendente','Em andamento':'b-andamento',
-    'Confirmado':'b-confirmado','Cancelado':'b-cancelado'
+// ── LOCK MODAL LOGIC ────────────────────────────────────────────────────────
+// Esta lógica impede o fechamento ao clicar fora ou apertar ESC
+
+function _setupModalLock(overlayId) {
+  const preventEsc = (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
-  return `<span class="badge ${map[s]||''}">${s}</span>`;
+  window.addEventListener('keydown', preventEsc, true);
+  document.getElementById(overlayId)._preventEsc = preventEsc;
 }
 
-function toast(msg, type='ok', duration=3800) {
-  const ic = {ok:'✅', err:'❌', info:'ℹ️', cancel:'⛔'};
-  const c  = document.getElementById('toasts');
-  const t  = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.innerHTML = `<span>${ic[type]||'•'}</span><span>${msg}</span>`;
-  c.appendChild(t);
-  setTimeout(() => t.remove(), duration);
-}
-
-function emptyState(icon, title, sub) {
-  return `<tr><td colspan="20"><div class="empty-state"><div class="ei">${icon}</div>
-    <h3>${title}</h3><p>${sub}</p></div></td></tr>`;
-}
-
-function barChart(items, valueKey, labelKey, color) {
-  if (!items.length) return '<p style="color:var(--text-muted);font-size:12px;">Sem dados</p>';
-  const max = Math.max(...items.map(x => x[valueKey]), 1);
-  return items.map(x => `
-    <div class="bar-item">
-      <div class="bar-meta">
-        <span title="${x[labelKey]}">${x[labelKey]||'N/A'}</span>
-        <span>${x[valueKey]}</span>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${(x[valueKey]/max*100).toFixed(0)}%;background:${color}"></div>
-      </div>
-    </div>`).join('');
-}
-
-// ── DASHBOARD ─────────────────────────────────────────────────────────────────
-async function loadDashboard() {
-  const [dashRes, listRes] = await Promise.all([
-    fetch('/api/dashboard'),
-    fetch('/api/programacoes')
-  ]);
-  const d = await dashRes.json();
-  const rows = await listRes.json();
-
-  const ub = document.getElementById('urg-count');
-  if (d.urgentes > 0) { ub.textContent = d.urgentes; ub.style.display = ''; }
-  else                { ub.style.display = 'none'; }
-
-  document.getElementById('kpi-grid').innerHTML = `
-    <div class="kpi c-teal"><div class="kpi-label">Total</div>
-      <div class="kpi-value">${d.total}</div><div class="kpi-sub">programações</div></div>
-    <div class="kpi c-yellow"><div class="kpi-label">Pendentes</div>
-      <div class="kpi-value">${d.pendentes}</div><div class="kpi-sub">aguardando ação</div></div>
-    <div class="kpi c-blue"><div class="kpi-label">Em Andamento</div>
-      <div class="kpi-value">${d.em_andamento}</div><div class="kpi-sub">em execução</div></div>
-    <div class="kpi c-green"><div class="kpi-label">Confirmados</div>
-      <div class="kpi-value">${d.confirmados}</div><div class="kpi-sub">finalizados</div></div>
-    <div class="kpi c-red"><div class="kpi-label">Urgentes</div>
-      <div class="kpi-value">${d.urgentes}</div><div class="kpi-sub">atenção imediata</div></div>
-    <div class="kpi c-orange"><div class="kpi-label">Hoje</div>
-      <div class="kpi-value">${d.hoje}</div><div class="kpi-sub">programações hoje</div></div>
-    <div class="kpi c-purple"><div class="kpi-label">Amanhã</div>
-      <div class="kpi-value">${d.amanha}</div><div class="kpi-sub">programadas</div></div>
-    <div class="kpi c-teal"><div class="kpi-label">Volume Total</div>
-      <div class="kpi-value" style="font-size:22px">${d.volume_total.toLocaleString('pt-BR')}</div>
-      <div class="kpi-sub">toneladas</div></div>
-  `;
-
-  document.getElementById('chart-op').innerHTML =
-    barChart(d.por_operacao,'count','operacao','linear-gradient(90deg,var(--accent),#00a884)');
-  document.getElementById('chart-dest').innerHTML =
-    barChart(d.por_destino,'count','destino','linear-gradient(90deg,var(--blue),#60a5fa)');
-  document.getElementById('chart-transp').innerHTML =
-    barChart(d.por_transportadora||[],'count','transportadora','linear-gradient(90deg,var(--purple),#c084fc)');
-
-  const tbody = document.getElementById('dash-tbody');
-  const slice = rows.slice(0, 10);
-  if (!slice.length) {
-    tbody.innerHTML = emptyState('📭','Nenhuma programação','Clique em "+ Nova Programação" para começar');
-    return;
+function _removeModalLock(overlayId) {
+  const preventEsc = document.getElementById(overlayId)._preventEsc;
+  if (preventEsc) {
+    window.removeEventListener('keydown', preventEsc, true);
   }
-  tbody.innerHTML = slice.map(r => `
-    <tr style="cursor:pointer" onclick="verDet(${r.id})">
-      <td class="td-mono">${r.data_br}</td>
-      <td><div class="td-flow">
-        <span>${r.origem}</span><span class="arrow">→</span><strong>${r.destino}</strong>
-      </div></td>
-      <td class="td-product">
-        <div class="td-product-name" title="${r.produto}">${r.produto}</div>
-        <div class="td-product-mp">${r.mp||''}</div>
-      </td>
-      <td class="td-mono">${r.quantidade||'—'} × ${r.tipo_veiculo||''}</td>
-      <td class="td-mono">${r.programacao_vol||'—'}</td>
-      <td style="font-size:11px;color:var(--text-muted)">${r.operacao||'—'}</td>
-      <td>${r.urgente?'<span class="urg-dot"></span>':''}${statusBadge(r.status)}</td>
-    </tr>`).join('');
 }
 
-// ── PROGRAMAÇÕES ──────────────────────────────────────────────────────────────
-async function loadProgramacoes() {
-  const p = new URLSearchParams();
-  const v = id => document.getElementById(id).value;
-  if (v('f-data'))     p.set('data',   v('f-data'));
-  if (v('f-orig-f'))   p.set('origem', v('f-orig-f'));
-  if (v('f-dest-f'))   p.set('destino',v('f-dest-f'));
-  if (v('f-status-f')) p.set('status', v('f-status-f'));
+// ── MODAL ACTIONS ───────────────────────────────────────────────────────────
 
-  document.getElementById('prog-tbody').innerHTML =
-    '<tr><td colspan="10" class="loading">Carregando…</td></tr>';
-
-  const rows = await fetch('/api/programacoes?' + p).then(r => r.json());
-  document.getElementById('count-lbl').textContent = `${rows.length} registro${rows.length!==1?'s':''}`;
-
-  if (!rows.length) {
-    document.getElementById('prog-tbody').innerHTML =
-      emptyState('🔍','Nenhum resultado','Tente ajustar os filtros');
-    return;
-  }
-
-  document.getElementById('prog-tbody').innerHTML = rows.map(r => `
-    <tr>
-      <td class="td-mono">${r.data_br}</td>
-      <td style="font-size:12px;max-width:130px">${r.origem}</td>
-      <td style="font-size:12px;font-weight:600;max-width:110px">${r.destino}</td>
-      <td class="td-product">
-        <div class="td-product-name" title="${r.produto}">${r.produto}</div>
-        <div class="td-product-mp">${r.mp||''}</div>
-      </td>
-      <td class="td-mono">${r.quantidade||'—'} × ${r.tipo_veiculo||''}</td>
-      <td class="td-mono">${r.programacao_vol||'—'}</td>
-      <td class="td-mono" style="font-size:11px">${r.pedido||'—'}/${r.item||''}</td>
-      <td style="font-size:11px;color:var(--text-muted);max-width:140px">${r.operacao||'—'}</td>
-      <td>${r.urgente?'<span class="urg-dot"></span>':''}${statusBadge(r.status)}</td>
-      <td>
-        <div class="action-btns">
-          <button class="btn btn-ghost btn-xs" onclick="verDet(${r.id})" title="Detalhes">👁</button>
-          <button class="btn btn-ghost btn-xs" onclick="editarProg(${r.id})" title="Editar">✏️</button>
-          <button class="btn btn-danger btn-xs" onclick="deletar(${r.id})" title="Excluir">🗑</button>
-        </div>
-      </td>
-    </tr>`).join('');
-}
-
-function clearFilters() {
-  ['f-data','f-orig-f','f-dest-f','f-status-f'].forEach(id => {
-    const el = document.getElementById(id);
-    el.tagName === 'INPUT' ? el.value = '' : el.selectedIndex = 0;
-  });
-  loadProgramacoes();
-}
-
-// ── URGENTES ──────────────────────────────────────────────────────────────────
-async function loadUrgentes() {
-  const rows = await fetch('/api/programacoes?urgente=true').then(r => r.json());
-  if (!rows.length) {
-    document.getElementById('urg-tbody').innerHTML =
-      emptyState('✅','Nenhuma urgência','Não há programações urgentes no momento');
-    return;
-  }
-  document.getElementById('urg-tbody').innerHTML = rows.map(r => `
-    <tr>
-      <td class="td-mono">${r.data_br}</td>
-      <td><div class="td-flow"><span>${r.origem}</span><span class="arrow">→</span>
-          <strong>${r.destino}</strong></div></td>
-      <td class="td-product">
-        <div class="td-product-name">${r.produto}</div>
-        <div class="td-product-mp">${r.mp||''}</div>
-      </td>
-      <td class="td-mono">${r.quantidade||'—'}</td>
-      <td>${r.transportadora||'—'}</td>
-      <td style="font-size:11px">${r.operacao||'—'}</td>
-      <td>${statusBadge(r.status)}</td>
-      <td><div class="action-btns">
-        <button class="btn btn-ghost btn-xs" onclick="verDet(${r.id})">👁</button>
-        <button class="btn btn-ghost btn-xs" onclick="editarProg(${r.id})">✏️</button>
-      </div></td>
-    </tr>`).join('');
-}
-
-// ── MODAL FORM ────────────────────────────────────────────────────────────────
 function openModal(id=null) {
   editingId = id;
-  document.getElementById('form-title').textContent = id ? 'Editar Programação' : 'Nova Programação';
+  document.getElementById('form-title').innerText = id ? 'Editar Programação' : 'Nova Programação';
   document.getElementById('ov-form').classList.add('open');
-  if (!id) {
-    resetForm();
-    document.getElementById('fp-data').value = new Date().toISOString().slice(0,10);
-  }
+  _setupModalLock('ov-form');
 }
+
 function closeModal() {
   document.getElementById('ov-form').classList.remove('open');
+  _removeModalLock('ov-form');
+  resetForm();
   editingId = null;
 }
+
 function resetForm() {
   ['fp-data','fp-pedido','fp-item','fp-periodo','fp-cod','fp-mp','fp-desc',
    'fp-valor','fp-qtd','fp-vol','fp-obs','fp-corte'].forEach(id => {
@@ -1010,9 +794,9 @@ function resetForm() {
   document.getElementById('fp-status').value = 'Pendente';
   document.getElementById('fp-troca').value  = 'Não';
   document.getElementById('fp-urgente').checked = false;
-  // Reset visual do select de status
   _resetStatusStyle();
 }
+
 function setForm(r) {
   document.getElementById('fp-data').value   = r.data;
   document.getElementById('fp-pedido').value = r.pedido||'';
@@ -1036,15 +820,10 @@ function setForm(r) {
   });
   const ps = document.getElementById('fp-produto');
   for (const o of ps.options) { if (o.value === r.produto) { ps.value = r.produto; break; } }
-
-  // Aplicar estilo visual se já estiver cancelado
   _updateStatusStyle(r.status||'Pendente');
 }
 
-// Detecta mudança no select de status e aplica estilo visual de alerta
-function onStatusChange(sel) {
-  _updateStatusStyle(sel.value);
-}
+function onStatusChange(sel) { _updateStatusStyle(sel.value); }
 
 function _updateStatusStyle(val) {
   const sel = document.getElementById('fp-status');
@@ -1060,10 +839,7 @@ function _updateStatusStyle(val) {
 
 function _resetStatusStyle() {
   const sel = document.getElementById('fp-status');
-  sel.style.borderColor = '';
-  sel.style.background  = '';
-  sel.style.color       = '';
-  sel.style.fontWeight  = '';
+  sel.style.borderColor = ''; sel.style.background = ''; sel.style.color = ''; sel.style.fontWeight = '';
 }
 
 function onProdutoChange() {
@@ -1073,15 +849,16 @@ function onProdutoChange() {
   document.getElementById('fp-mp').value   = opt.dataset.mp||'';
   document.getElementById('fp-desc').value = opt.value||'';
 }
+
 async function editarProg(id) {
   const r = await fetch('/api/programacoes/'+id).then(x=>x.json());
   setForm(r);
   openModal(id);
   closeDet();
 }
+
 function editFromDet() { editarProg(detailId); }
 
-// ── SALVAR (com interceptação de cancelamento) ────────────────────────────────
 async function salvar() {
   const g  = id => document.getElementById(id).value;
   const payload = {
@@ -1110,14 +887,9 @@ async function salvar() {
     toast('Preencha os campos obrigatórios: Data, Origem, Destino e Produto','err');
     return;
   }
-
-  // ── Intercepta cancelamento: só é disparado em EDIÇÕES (editingId != null)
-  //    e apenas quando o status está sendo ALTERADO para Cancelado
   if (editingId && payload.status === 'Cancelado') {
-    // Busca o status atual para comparar
     const atual = await fetch('/api/programacoes/'+editingId).then(r=>r.json());
     if (atual.status !== 'Cancelado') {
-      // Ainda não estava cancelado → abre modal de confirmação
       _cancelPayload  = payload;
       _cancelSnapshot = {
         id:      editingId,
@@ -1130,14 +902,12 @@ async function salvar() {
         transp:  payload.transportadora || '—',
       };
       _abrirCancelConfirm();
-      return; // Não salva ainda — aguarda confirmação
+      return;
     }
   }
-
   await _executarSalvar(payload);
 }
 
-// Executa o PUT/POST de fato
 async function _executarSalvar(payload) {
   const url    = editingId ? `/api/programacoes/${editingId}` : '/api/programacoes';
   const method = editingId ? 'PUT' : 'POST';
@@ -1147,11 +917,8 @@ async function _executarSalvar(payload) {
 
   if (data.success) {
     const isCancelamento = (payload.status === 'Cancelado' && editingId);
-    if (isCancelamento) {
-      toast('Programação cancelada. Email de notificação enviado.', 'cancel', 5000);
-    } else {
-      toast(editingId ? 'Programação atualizada!' : 'Programação criada!');
-    }
+    if (isCancelamento) toast('Programação cancelada. Email enviado.', 'cancel', 5000);
+    else toast(editingId ? 'Programação atualizada!' : 'Programação criada!');
     closeModal();
     if      (currentPage==='dashboard')    loadDashboard();
     else if (currentPage==='programacoes') loadProgramacoes();
@@ -1161,46 +928,25 @@ async function _executarSalvar(payload) {
   }
 }
 
-// ── MODAL DE CONFIRMAÇÃO DE CANCELAMENTO ──────────────────────────────────────
 function _abrirCancelConfirm() {
   const s = _cancelSnapshot;
   document.getElementById('cancel-info-box').innerHTML = `
-    <div class="ci-row">
-      <span class="ci-label">Programação</span>
-      <span class="ci-val">#${s.id}</span>
-    </div>
-    <div class="ci-row">
-      <span class="ci-label">Data</span>
-      <span class="ci-val">${s.data ? s.data.split('-').reverse().join('/') : '—'}</span>
-    </div>
-    <div class="ci-row">
-      <span class="ci-label">Produto/MP</span>
-      <span class="ci-val">${s.mp}</span>
-    </div>
-    <div class="ci-row">
-      <span class="ci-label">Rota</span>
-      <span class="ci-val">${s.rota}</span>
-    </div>
-    <div class="ci-row">
-      <span class="ci-label">Qtd / Tipo</span>
-      <span class="ci-val">${s.qtd} × ${s.tipo}</span>
-    </div>
-    <div class="ci-row">
-      <span class="ci-label">Vol. (t)</span>
-      <span class="ci-val">${s.vol}</span>
-    </div>
-    <div class="ci-row">
-      <span class="ci-label">Transportadora</span>
-      <span class="ci-val">${s.transp}</span>
-    </div>
+    <div class="ci-row"><span class="ci-label">Programação</span><span class="ci-val">#${s.id}</span></div>
+    <div class="ci-row"><span class="ci-label">Data</span><span class="ci-val">${s.data ? s.data.split('-').reverse().join('/') : '—'}</span></div>
+    <div class="ci-row"><span class="ci-label">Produto/MP</span><span class="ci-val">${s.mp}</span></div>
+    <div class="ci-row"><span class="ci-label">Rota</span><span class="ci-val">${s.rota}</span></div>
+    <div class="ci-row"><span class="ci-label">Qtd / Tipo</span><span class="ci-val">${s.qtd} × ${s.tipo}</span></div>
+    <div class="ci-row"><span class="ci-label">Vol. (t)</span><span class="ci-val">${s.vol}</span></div>
+    <div class="ci-row"><span class="ci-label">Transportadora</span><span class="ci-val">${s.transp}</span></div>
   `;
   document.getElementById('ov-cancel-confirm').classList.add('open');
+  _setupModalLock('ov-cancel-confirm');
 }
 
 function closeCancelConfirm() {
   document.getElementById('ov-cancel-confirm').classList.remove('open');
-  _cancelPayload  = null;
-  _cancelSnapshot = null;
+  _removeModalLock('ov-cancel-confirm');
+  _cancelPayload = null; _cancelSnapshot = null;
 }
 
 async function confirmarCancelamento() {
@@ -1216,7 +962,6 @@ async function deletar(id) {
   if (d.success) { toast('Excluída.'); loadProgramacoes(); }
 }
 
-// ── MODAL DETALHE ─────────────────────────────────────────────────────────────
 async function verDet(id) {
   detailId = id;
   const r = await fetch('/api/programacoes/'+id).then(x=>x.json());
@@ -1228,14 +973,7 @@ async function verDet(id) {
       <span style="font-family:var(--mono);font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;color:var(--text-muted)">${r.data_br}</span>
     </div>
     <div class="detail-grid">
-      <div class="det full">
-        <div class="det-label">Produto</div>
-        <div class="det-val" style="font-family:var(--mono);font-size:13px">${r.produto}</div>
-        <div style="margin-top:4px;display:flex;gap:6px;align-items:center;">
-          <span style="font-family:var(--mono);font-size:11px;color:var(--accent)">${r.mp||''}</span>
-          ${r.cod?`<span style="font-family:var(--mono);font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--text-muted)">${r.cod}</span>`:''}
-        </div>
-      </div>
+      <div class="det full"><div class="det-label">Produto</div><div class="det-val" style="font-family:var(--mono);font-size:13px">${r.produto}</div><div style="margin-top:4px;display:flex;gap:6px;align-items:center;"><span style="font-family:var(--mono);font-size:11px;color:var(--accent)">${r.mp||''}</span>${r.cod?`<span style="font-family:var(--mono);font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--text-muted)">${r.cod}</span>`:''}</div></div>
       <div class="det"><div class="det-label">Origem</div><div class="det-val">📦 ${r.origem}</div></div>
       <div class="det"><div class="det-label">Destino</div><div class="det-val">🏭 ${r.destino}</div></div>
       <div class="det"><div class="det-label">Veículos × Tipo</div><div class="det-val td-mono">${r.quantidade||'—'} × ${r.tipo_veiculo||'—'}</div></div>
@@ -1251,115 +989,174 @@ async function verDet(id) {
       <div class="det"><div class="det-label">Criado em</div><div class="det-val td-mono" style="font-size:11px">${r.criado_em||'—'}</div></div>
     </div>`;
   document.getElementById('ov-det').classList.add('open');
+  _setupModalLock('ov-det');
 }
+
 function closeDet() {
   document.getElementById('ov-det').classList.remove('open');
-  detailId = null;
+  _removeModalLock('ov-det');
 }
-
-// ── MODAL EMAIL ───────────────────────────────────────────────────────────────
-let emailRows = [];
 
 function openEmailModal() {
-  const amanha = new Date();
-  amanha.setDate(amanha.getDate() + 1);
-  document.getElementById('email-data').value = amanha.toISOString().slice(0,10);
-  document.getElementById('email-obs').value  = '';
-
-  document.getElementById('email-to-chips').innerHTML =
-    DESTINATARIOS.map(e=>`<span class="chip">${e}</span>`).join('');
-
-  const ccRow = document.getElementById('email-cc-row');
-  if (CC_LISTA.length) {
-    document.getElementById('email-cc-chips').innerHTML =
-      CC_LISTA.map(e=>`<span class="chip cc">${e}</span>`).join('');
-    ccRow.style.display = '';
-  } else {
-    ccRow.style.display = 'none';
-  }
-
+  document.getElementById('email-data').value = new Date().toISOString().split('T')[0];
   document.getElementById('ov-email').classList.add('open');
+  _setupModalLock('ov-email');
   loadEmailPreview();
 }
+
 function closeEmailModal() {
   document.getElementById('ov-email').classList.remove('open');
+  _removeModalLock('ov-email');
+  document.getElementById('email-obs').value = '';
 }
 
-async function loadEmailPreview() {
-  const data = document.getElementById('email-data').value;
-  const btn  = document.getElementById('btn-send-email');
-  const prev = document.getElementById('email-rows-preview');
-  const lbl  = document.getElementById('email-prog-label');
-  if (!data) {
-    prev.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-muted)">Selecione uma data acima</div>';
-    btn.disabled = true;
-    return;
+function loadEmailPreview() {
+  const d = document.getElementById('email-data').value;
+  const to = document.getElementById('email-to-chips');
+  const cc = document.getElementById('email-cc-chips');
+  to.innerHTML = DESTINATARIOS.map(e => `<span class="email-chip">${e}</span>`).join('');
+  if(CC.length){
+    document.getElementById('email-cc-row').style.display = 'block';
+    cc.innerHTML = CC.map(e => `<span class="email-chip">${e}</span>`).join('');
   }
-  prev.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-muted)">Carregando…</div>';
-  const rows = await fetch('/api/programacoes?data='+data).then(r=>r.json());
-  emailRows = rows;
-  if (!rows.length) {
-    prev.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-muted)">Nenhuma programação para esta data</div>';
-    btn.disabled = true;
-    lbl.textContent = 'Programações incluídas: 0';
-    return;
-  }
-  lbl.textContent = `Programações incluídas: ${rows.length}`;
-  btn.disabled = false;
-  prev.innerHTML = rows.map(r => `
-    <div class="erp-row">
-      <span class="erp-dot ${r.urgente?'urg':''}"></span>
-      <div class="erp-info">
-        <div class="erp-mp">${r.mp||r.produto.slice(0,30)}</div>
-        <div class="erp-rota">${r.origem} → ${r.destino}</div>
+  fetch(`/api/programacoes?data=${d}`).then(r=>r.json()).then(rows => {
+    const list = document.getElementById('email-rows-preview');
+    if(!rows.length) { list.innerHTML = '<div style="padding:12px;font-size:11px;color:var(--danger)">Nenhuma programação para esta data</div>'; return; }
+    list.innerHTML = rows.map(r => `
+      <div class="erp-row">
+        <div><div class="erp-main">${r.mp||r.produto.slice(0,25)}</div><div class="erp-sub">${r.origem} → ${r.destino}</div></div>
+        <div class="erp-sub">${r.quantidade||'—'} veíc.</div>
       </div>
-      <div class="erp-vol">${r.programacao_vol||'—'} t &bull; ${r.quantidade||'—'} ${r.tipo_veiculo||''}</div>
-    </div>`).join('');
+    `).join('');
+  });
 }
 
-async function enviarEmail() {
-  const btn = document.getElementById('btn-send-email');
+async function enviarEmailLote() {
   const data = document.getElementById('email-data').value;
   const obs  = document.getElementById('email-obs').value;
-  if (!data || !emailRows.length) return;
-
-  btn.disabled = true;
-  btn.innerHTML = '⏳ Enviando…';
+  const btn  = document.getElementById('btn-send-email');
+  btn.disabled = true; btn.innerText = '⌛ Enviando...';
   try {
-    const res  = await fetch('/api/enviar-email', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ data, obs })
-    });
-    const json = await res.json();
-    if (json.success) {
-      toast(json.message || 'Email enviado com sucesso!', 'ok');
-      closeEmailModal();
-    } else {
-      toast('Erro: ' + json.error, 'err');
-    }
-  } catch(e) {
-    toast('Falha de conexão: ' + e.message, 'err');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '✉ Enviar pelo Outlook';
-  }
+    const res = await fetch('/api/enviar-email',{
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({data, obs})
+    }).then(r=>r.json());
+    if(res.success){ toast('🚀 Email enviado com sucesso!'); closeEmailModal(); }
+    else toast(res.error||'Erro ao enviar','err');
+  } catch(e){ toast('Erro de conexão','err'); }
+  finally { btn.disabled = false; btn.innerText = '🚀 Enviar Email Agora'; }
 }
 
-// ── FECHAR MODAIS CLICANDO FORA ───────────────────────────────────────────────
-['ov-form','ov-det','ov-email','ov-cancel-confirm'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if (e.target === e.currentTarget) {
-      if (id==='ov-form')           closeModal();
-      if (id==='ov-det')            closeDet();
-      if (id==='ov-email')          closeEmailModal();
-      if (id==='ov-cancel-confirm') closeCancelConfirm();
+// ── DATA FETCHING ───────────────────────────────────────────────────────────
+
+async function loadDashboard() {
+  const d = await fetch('/api/dashboard').then(r=>r.json());
+  ['total','pendentes','andamento','confirmados','urgentes','volume'].forEach(k => {
+    document.getElementById('kpi-'+k).innerText = d[k] || (k==='volume'?'0.0':'0');
+  });
+  document.getElementById('kpi-hoje').innerText = d.hoje;
+  document.getElementById('kpi-hoje-date').innerText = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  document.getElementById('urg-badge').innerText = d.urgentes;
+
+  const renderBar = (id, data, labelKey) => {
+    const el = document.getElementById(id);
+    if(!data.length){ el.innerHTML = '<div style="font-size:11px;color:var(--text-muted)">Sem dados</div>'; return; }
+    const max = Math.max(...data.map(x=>x.count));
+    el.innerHTML = data.map(x => `
+      <div class="bar-item">
+        <div class="bar-meta"><span>${x[labelKey]}</span><span>${x.count}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(x.count/max)*100}%; background:var(--accent)"></div></div>
+      </div>
+    `).join('');
+  };
+  renderBar('chart-destinos', d.por_destino, 'destino');
+  renderBar('chart-operacoes', d.por_operacao, 'operacao');
+  renderBar('chart-transp', d.por_transportadora, 'transportadora');
+}
+
+async function loadProgramacoes() {
+  const data = document.getElementById('f-data').value;
+  const orig = document.getElementById('f-orig').value;
+  const dest = document.getElementById('f-dest').value;
+  const stat = document.getElementById('f-status').value;
+  let url = `/api/programacoes?data=${data}&origem=${orig}&destino=${dest}&status=${stat}`;
+  const rows = await fetch(url).then(r=>r.json());
+  renderTable('prog-tbody', rows);
+  document.getElementById('table-count').innerText = `Mostrando ${rows.length} registros`;
+}
+
+async function loadUrgentes() {
+  const rows = await fetch('/api/programacoes?urgente=true').then(r=>r.json());
+  renderTable('urg-tbody', rows);
+}
+
+function renderTable(targetId, rows) {
+  const tbody = document.getElementById(targetId);
+  if(!rows.length){ tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="ei">🔍</div><h3>Nada encontrado</h3><p>Tente ajustar os filtros ou criar uma nova programação.</p></div></td></tr>`; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="td-mono">${r.data_br}</td>
+      <td><div class="td-flow"><span>${r.origem}</span><span class="arrow">→</span><span>${r.destino}</span></div></td>
+      <td class="td-product"><div class="td-product-name">${r.produto}</div><div class="td-product-mp">${r.urgente?'<span class="urg-dot"></span>':''}${r.mp||'—'}</div></td>
+      <td class="td-mono">${r.quantidade||'—'}</td>
+      <td>${r.transportadora||'—'}</td>
+      <td style="font-size:11px">${r.operacao||'—'}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn btn-ghost btn-xs" onclick="verDet(${r.id})">👁</button>
+          <button class="btn btn-ghost btn-xs" onclick="editarProg(${r.id})">✏️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function statusBadge(s) {
+  const cls = {Pendente:'b-pendente','Em andamento':'b-andamento',Confirmado:'b-confirmado',Cancelado:'b-cancelado'}[s]||'';
+  return `<span class="badge ${cls}">${s}</span>`;
+}
+
+function clearFilters() {
+  document.getElementById('f-data').value = '';
+  document.getElementById('f-orig').selectedIndex = 0;
+  document.getElementById('f-dest').selectedIndex = 0;
+  document.getElementById('f-status').selectedIndex = 0;
+  loadProgramacoes();
+}
+
+function toast(msg, type='success', time=3000) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type==='err'?'toast-err':''} ${type==='cancel'?'toast-cancel':''}`;
+  t.innerHTML = `<span class="toast-icon">${type==='err'?'❌':(type==='cancel'?'⛔':'✅')}</span><span class="toast-msg">${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),300); }, time);
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('sidebar-clock').innerText = now.toLocaleTimeString('pt-BR');
+  document.getElementById('sidebar-date').innerText  = now.toLocaleDateString('pt-BR');
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+loadDashboard();
+
+// REMOVIDO: Evento que fechava modais ao clicar no fundo escuro
+/*
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', e => {
+    if(e.target === ov) {
+      if(ov.id==='ov-form') closeModal();
+      if(ov.id==='ov-det') closeDet();
+      if(ov.id==='ov-email') closeEmailModal();
+      if(ov.id==='ov-cancel-confirm') closeCancelConfirm();
     }
   });
 });
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-loadDashboard();
+*/
 </script>
 </body>
 </html>
