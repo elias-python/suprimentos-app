@@ -346,7 +346,6 @@ def _build_tabela_html(registros, titulo, extra_obs=""):
     for r in registros:
         urg = "🚨 " if r.get('urgente') else ""
         hor = r['horario_corte'] or "—"
-        # horário de corte em vermelho se preenchido
         hor_html = f'<span style="color:#c0392b;font-weight:bold">{hor}</span>' if r.get('horario_corte') else "—"
         linhas += f"""
         <tr>
@@ -391,17 +390,237 @@ def _build_tabela_html(registros, titulo, extra_obs=""):
               <th>Troca NF</th><th>Operação</th><th>Transportadora</th>
             </tr>
           </thead>
-          <tbody>{"".join(
-            f'<tr style="background:{"#f9f9f9" if i%2==0 else "#fff"}">{linhas.split("</tr>")[i]}</tr>'
-            for i in range(len(registros))
-          ) if False else linhas}
-          </tbody>
+          <tbody>{linhas}</tbody>
         </table>
       </div>
       <p style="padding:0 20px;font-size:10px;color:#888">
         Gerado automaticamente pelo sistema Mosaic Supply Chain.
       </p>
     </body></html>"""
+
+
+# ── EMAIL DE CANCELAMENTO ─────────────────────────────────────────────────────
+def _enviar_email_cancelamento(r_dict):
+    """
+    Dispara email com tema vermelho informando que a programação foi cancelada.
+    r_dict é o to_dict() APÓS a edição (já com status=Cancelado).
+    """
+    prog_id  = r_dict.get('id', '—')
+    data_fmt = r_dict.get('data_br', '—')
+    origem   = r_dict.get('origem', '—')
+    destino  = r_dict.get('destino', '—')
+    mp       = r_dict.get('mp') or r_dict.get('produto', '—')
+    qtd      = int(r_dict['quantidade']) if r_dict.get('quantidade') else '—'
+    vol      = r_dict.get('programacao_vol') or '—'
+    tipo_v   = r_dict.get('tipo_veiculo') or '—'
+    pedido   = r_dict.get('pedido') or '—'
+    item     = r_dict.get('item') or '—'
+    transp   = r_dict.get('transportadora') or '—'
+    operacao = r_dict.get('operacao') or '—'
+    obs      = r_dict.get('obs') or ''
+    periodo  = r_dict.get('periodo_operacao') or '—'
+    horario  = r_dict.get('horario_corte') or '—'
+
+    obs_block = (
+        f'<tr><td colspan="2" style="padding:10px 14px;background:#fff5f5;'
+        f'border-left:4px solid #c0392b;font-size:13px;color:#555">'
+        f'<strong>Observações:</strong> {obs}</td></tr>'
+    ) if obs else ''
+
+    html = f"""
+    <html>
+    <body style="font-family:Arial,sans-serif;color:#222;font-size:13px;margin:0;padding:0">
+
+      <!-- Cabeçalho vermelho -->
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="background:linear-gradient(135deg,#8b0000 0%,#c0392b 100%);
+                     padding:16px 22px">
+            <span style="color:#fff;font-size:18px;font-weight:bold">
+              ❌ Mosaic Supply Chain
+            </span>
+            <span style="color:rgba(255,255,255,0.75);font-size:13px;
+                         display:block;margin-top:3px;letter-spacing:0.5px">
+              CANCELAMENTO DE PROGRAMAÇÃO
+            </span>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Banner de alerta -->
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="background:#fff0f0;border-bottom:3px solid #c0392b;
+                     padding:14px 22px">
+            <span style="font-size:22px;font-weight:900;color:#c0392b;
+                         letter-spacing:-0.5px">
+              ⛔ Programação #{prog_id} CANCELADA
+            </span>
+            <div style="color:#888;font-size:12px;margin-top:5px">
+              Cancelado em {datetime.utcnow().strftime('%d/%m/%Y às %H:%M')} UTC
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Detalhes -->
+      <div style="padding:20px 22px">
+        <table width="100%" cellpadding="0" cellspacing="0"
+               style="border-collapse:collapse;border:1px solid #e0c0c0;border-radius:6px;
+                      overflow:hidden;font-size:13px">
+
+          <tr style="background:#fdf0f0">
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0;width:160px">Data</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
+                       font-weight:600;font-size:15px">{data_fmt}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0">Produto / MP</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
+              <strong style="font-size:14px">{mp}</strong>
+            </td>
+          </tr>
+          <tr style="background:#fdf0f0">
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0">Rota</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
+              📦 {origem}
+              <span style="color:#c0392b;font-weight:bold;margin:0 6px">→</span>
+              🏭 {destino}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0">Quantidade / Tipo</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
+                       font-family:monospace">{qtd} × {tipo_v}</td>
+          </tr>
+          <tr style="background:#fdf0f0">
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0">Volume (t)</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
+                       font-family:monospace">{vol}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0">Período / H. Corte</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
+              {periodo} &nbsp;|&nbsp; {horario}
+            </td>
+          </tr>
+          <tr style="background:#fdf0f0">
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0">Pedido / Item</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
+                       font-family:monospace">{pedido} / {item}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       border-bottom:1px solid #e8d0d0">Transportadora</td>
+            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
+              🚛 {transp}
+            </td>
+          </tr>
+          <tr style="background:#fdf0f0">
+            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
+                       {'border-bottom:1px solid #e8d0d0' if obs else ''}">Operação</td>
+            <td style="padding:10px 14px;
+                       {'border-bottom:1px solid #e8d0d0' if obs else ''}">{operacao}</td>
+          </tr>
+          {obs_block}
+        </table>
+      </div>
+
+      <!-- Rodapé -->
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="background:#fdf0f0;border-top:1px solid #e8d0d0;
+                     padding:10px 22px;font-size:10px;color:#999">
+            Cancelamento registrado automaticamente pelo sistema Mosaic Supply Chain.
+          </td>
+        </tr>
+      </table>
+
+    </body>
+    </html>"""
+
+    assunto = f"[Mosaic] ❌ CANCELADO — Prog. #{prog_id} — {data_fmt} — {mp}"
+    _enviar_smtp(html, assunto)
+
+
+# ── EMAIL DE ALTERAÇÃO ────────────────────────────────────────────────────────
+def _enviar_email_alteracao(antes, depois):
+    """Envia um email de complemento/alteração destacando os campos modificados."""
+    campos_label = {
+        'data_br': 'Data', 'origem': 'Origem', 'destino': 'Destino',
+        'mp': 'MP', 'produto': 'Produto', 'cod': 'Cód.',
+        'periodo_operacao': 'Período', 'horario_corte': 'H. Corte',
+        'quantidade': 'Quantidade', 'tipo_veiculo': 'Tipo Veículo',
+        'programacao_vol': 'Volume (t)', 'pedido': 'Pedido', 'item': 'Item',
+        'valor_unit': 'Valor Unit.', 'troca_nf': 'Troca NF',
+        'operacao': 'Operação', 'transportadora': 'Transportadora',
+        'urgente': 'Urgente', 'status': 'Status', 'obs': 'Observações',
+    }
+    ignorar = {'criado_em', 'atualizado_em'}
+
+    linhas_diff = ""
+    for campo, label in campos_label.items():
+        if campo in ignorar:
+            continue
+        v_antes  = antes.get(campo)
+        v_depois = depois.get(campo)
+        if str(v_antes or '') != str(v_depois or ''):
+            linhas_diff += f"""
+            <tr>
+              <td style="padding:6px 10px;border-bottom:1px solid #eee;font-weight:600">{label}</td>
+              <td style="padding:6px 10px;border-bottom:1px solid #eee;color:#c0392b;
+                         text-decoration:line-through">{v_antes or '—'}</td>
+              <td style="padding:6px 10px;border-bottom:1px solid #eee;color:#155724;
+                         font-weight:bold">{v_depois or '—'}</td>
+            </tr>"""
+
+    if not linhas_diff:
+        return
+
+    data_fmt   = depois.get('data_br', '—')
+    origem     = depois.get('origem', '—')
+    destino    = depois.get('destino', '—')
+    mp         = depois.get('mp') or depois.get('produto', '—')
+    prog_id    = depois.get('id', '—')
+
+    html = f"""
+    <html><body style="font-family:Arial,sans-serif;color:#222;font-size:13px">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr><td style="background:#155724;padding:14px 20px">
+          <span style="color:#fff;font-size:17px;font-weight:bold">🌱 Mosaic Supply Chain</span>
+        </td></tr>
+      </table>
+      <div style="padding:16px 20px">
+        <h2 style="color:#c0392b;margin:0 0 4px">⚠️ Alteração na Programação #{prog_id}</h2>
+        <p style="color:#555;margin:4px 0 16px">
+          <strong>{data_fmt}</strong> · {origem} → {destino} · <strong>{mp}</strong>
+        </p>
+        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+               style="border-collapse:collapse;font-size:13px;max-width:600px">
+          <thead>
+            <tr style="background:#f4f4f4">
+              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Campo</th>
+              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Antes</th>
+              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Depois</th>
+            </tr>
+          </thead>
+          <tbody>{linhas_diff}</tbody>
+        </table>
+      </div>
+      <p style="padding:0 20px;font-size:10px;color:#888">
+        Alteração registrada automaticamente pelo sistema Mosaic Supply Chain.
+      </p>
+    </body></html>"""
+
+    assunto = f"[Mosaic] Alteração na Programação #{prog_id} — {data_fmt} — {mp}"
+    _enviar_smtp(html, assunto)
 
 
 # ── HELPER ──────────────────────────────────────────────────────────────────
@@ -542,19 +761,30 @@ def editar(id):
     r = Programacao.query.get_or_404(id)
     p = request.json or {}
 
-    # Captura snapshot antes da edição para o email de alteração
+    # Captura snapshot ANTES da edição
     antes = r.to_dict()
+    status_antes = antes.get('status', '')
 
     _apply_payload(r, p)
     db.session.commit()
 
-    # Email automático de alteração (não bloqueia a resposta se falhar)
-    notificar = p.get('notificar_alteracao', False)
-    if notificar:
+    depois = r.to_dict()
+    status_depois = depois.get('status', '')
+
+    # ── Lógica de email automático ──────────────────────────────────────────
+    # 1. Cancelamento: status mudou para "Cancelado" → email vermelho específico
+    if status_antes != 'Cancelado' and status_depois == 'Cancelado':
         try:
-            _enviar_email_alteracao(antes, r.to_dict())
+            _enviar_email_cancelamento(depois)
         except Exception:
-            pass  # email falhou silenciosamente — não impede o save
+            pass  # falha silenciosa — não bloqueia o save
+
+    # 2. Outras alterações (exceto cancelamento, já tratado acima)
+    elif p.get('notificar_alteracao', False):
+        try:
+            _enviar_email_alteracao(antes, depois)
+        except Exception:
+            pass
 
     return jsonify({'success': True})
 
@@ -565,79 +795,6 @@ def deletar(id):
     db.session.delete(r)
     db.session.commit()
     return jsonify({'success': True})
-
-
-# ── EMAIL DE ALTERAÇÃO ────────────────────────────────────────────────────────
-def _enviar_email_alteracao(antes, depois):
-    """Envia um email de complemento/alteração destacando os campos modificados."""
-    campos_label = {
-        'data_br': 'Data', 'origem': 'Origem', 'destino': 'Destino',
-        'mp': 'MP', 'produto': 'Produto', 'cod': 'Cód.',
-        'periodo_operacao': 'Período', 'horario_corte': 'H. Corte',
-        'quantidade': 'Quantidade', 'tipo_veiculo': 'Tipo Veículo',
-        'programacao_vol': 'Volume (t)', 'pedido': 'Pedido', 'item': 'Item',
-        'valor_unit': 'Valor Unit.', 'troca_nf': 'Troca NF',
-        'operacao': 'Operação', 'transportadora': 'Transportadora',
-        'urgente': 'Urgente', 'status': 'Status', 'obs': 'Observações',
-    }
-    ignorar = {'criado_em', 'atualizado_em'}
-
-    linhas_diff = ""
-    for campo, label in campos_label.items():
-        if campo in ignorar:
-            continue
-        v_antes  = antes.get(campo)
-        v_depois = depois.get(campo)
-        if str(v_antes or '') != str(v_depois or ''):
-            linhas_diff += f"""
-            <tr>
-              <td style="padding:6px 10px;border-bottom:1px solid #eee;font-weight:600">{label}</td>
-              <td style="padding:6px 10px;border-bottom:1px solid #eee;color:#c0392b;
-                         text-decoration:line-through">{v_antes or '—'}</td>
-              <td style="padding:6px 10px;border-bottom:1px solid #eee;color:#155724;
-                         font-weight:bold">{v_depois or '—'}</td>
-            </tr>"""
-
-    if not linhas_diff:
-        return  # nada mudou, não envia
-
-    data_fmt   = depois.get('data_br', '—')
-    origem     = depois.get('origem', '—')
-    destino    = depois.get('destino', '—')
-    mp         = depois.get('mp') or depois.get('produto', '—')
-    prog_id    = depois.get('id', '—')
-
-    html = f"""
-    <html><body style="font-family:Arial,sans-serif;color:#222;font-size:13px">
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="background:#155724;padding:14px 20px">
-          <span style="color:#fff;font-size:17px;font-weight:bold">🌱 Mosaic Supply Chain</span>
-        </td></tr>
-      </table>
-      <div style="padding:16px 20px">
-        <h2 style="color:#c0392b;margin:0 0 4px">⚠️ Alteração na Programação #{prog_id}</h2>
-        <p style="color:#555;margin:4px 0 16px">
-          <strong>{data_fmt}</strong> · {origem} → {destino} · <strong>{mp}</strong>
-        </p>
-        <table border="0" cellpadding="0" cellspacing="0" width="100%"
-               style="border-collapse:collapse;font-size:13px;max-width:600px">
-          <thead>
-            <tr style="background:#f4f4f4">
-              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Campo</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Antes</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Depois</th>
-            </tr>
-          </thead>
-          <tbody>{linhas_diff}</tbody>
-        </table>
-      </div>
-      <p style="padding:0 20px;font-size:10px;color:#888">
-        Alteração registrada automaticamente pelo sistema Mosaic Supply Chain.
-      </p>
-    </body></html>"""
-
-    assunto = f"[Mosaic] Alteração na Programação #{prog_id} — {data_fmt} — {mp}"
-    _enviar_smtp(html, assunto)
 
 
 # ── EMAIL PROGRAMAÇÃO ─────────────────────────────────────────────────────────
