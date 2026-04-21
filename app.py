@@ -72,7 +72,7 @@ class Programacao(db.Model):
             'status': self.status,
             'criado_em': self.criado_em.strftime('%d/%m/%Y %H:%M') if self.criado_em else None,
         }
-
+    
 
 # ── DADOS DE REFERÊNCIA ────────────────────────────────────────────────────────
 ORIGENS = [
@@ -502,6 +502,9 @@ def enviar_email():
         }), 500
     except Exception as e:
         return jsonify({'success': False, 'error': f'Erro ao enviar email: {str(e)}'}), 500
+    
+
+    
 
 
 # ── ALTERNATIVA SMTP (para Linux/Mac ou sem Outlook) ──────────────────────────
@@ -528,9 +531,13 @@ def enviar_email():
 #         server.sendmail(SMTP_USER, EMAIL_DESTINATARIOS, msg.as_string())
 # ─────────────────────────────────────────────────────────────────────────────
 
+def init_db():
+        with app.app_context():
+            db.create_all()
 
+            if Programacao.query.count() == 0:
+                seed_data()
+                
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        seed_data()
+    init_db()
     app.run(debug=True, port=5050, host='0.0.0.0')
