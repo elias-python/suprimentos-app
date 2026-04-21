@@ -204,4 +204,4 @@ if __name__ == '__main__':
 
 @app.route('/')
 def index():
-    return "Sistema rodando OK"
+    return render_template('index.html')
