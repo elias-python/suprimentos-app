@@ -9,7 +9,7 @@ from sqlalchemy import func
 
 # ── DATABASE ────────────────────────────────────────────────────────────────
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///suprimentos.db")
-if DATABASE_URL.startswith("postgres://"):
+if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://")
 
 app = Flask(__name__)
