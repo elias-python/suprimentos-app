@@ -28,7 +28,7 @@ SMTP_FROM = os.environ.get("SMTP_FROM", SMTP_USER)
 EMAIL_DESTINATARIOS = ["elias.santana@mosaicco.com"]
 EMAIL_CC            = ["WILLIAM.SANTANA@mosaicco.com"]
 
-# ── LISTAS REAIS (extraídas da planilha de Abril/2026) ──────────────────────
+# ── LISTAS ──────────────────────────────────────────────────────────────────
 ORIGENS = [
     "Az. Fortesolo",
     "Az. Multitrans 3",
@@ -63,7 +63,6 @@ OPERACOES = [
     "Venda de produção (5.101)",
 ]
 
-# 203 produtos reais da aba BD
 PRODUTOS = [
   {"cod": "1000176", "produto": "MP - FOSFATO DIAMONIO 18N 46/40P2O5 GR", "mp": "DAP"},
   {"cod": "1000191", "produto": "MP - FOSF.MON.MAP FAR.10N 49/44 P2O5", "mp": ""},
@@ -293,7 +292,7 @@ class Programacao(db.Model):
     obs = db.Column(db.Text)
     transportadora = db.Column(db.String(200))
     urgente = db.Column(db.Boolean, default=False)
-    status = db.Column(db.String(50), default='Pendente')
+    status = db.Column(db.String(50), default='Em andamento')
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     atualizado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -341,70 +340,166 @@ def _enviar_smtp(html_body, assunto):
         s.sendmail(SMTP_FROM, destinatarios, msg.as_string())
 
 
+def _fmt_val(v):
+    """Formata valor monetário."""
+    if v is None:
+        return '—'
+    return 'R$ ' + f"{v:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+
+
 def _build_tabela_html(registros, titulo, extra_obs=""):
+    """
+    Gera HTML de programação no mesmo estilo da planilha:
+    colunas: Data | Origem | Destino | Cód | Produto | MP | Período | H.Corte
+             | Qtd | Tipo | Programação(vol) | Pedido | Item | Valor.Unit
+             | Troca NF | Operação | Obs | Transportadora
+    """
     linhas = ""
     for r in registros:
-        urg = "🚨 " if r.get('urgente') else ""
-        hor = r['horario_corte'] or "—"
-        hor_html = f'<span style="color:#c0392b;font-weight:bold">{hor}</span>' if r.get('horario_corte') else "—"
+        urg_icon = "🚨 " if r.get('urgente') else ""
+        hor = r.get('horario_corte') or ''
+        hor_html = (f'<span style="color:#c0392b;font-weight:bold">{hor}</span>'
+                    if hor else '—')
+        vol = r.get('programacao_vol')
+        vol_fmt = f"{int(vol):,}".replace(',', '.') if vol else '—'
+        qtd = int(r['quantidade']) if r.get('quantidade') else '—'
+        obs_txt = (r.get('obs') or '').replace('\n', '<br>')
+
         linhas += f"""
         <tr>
-          <td>{r['data_br']}</td>
+          <td style="white-space:nowrap">{r['data_br']}</td>
           <td>{r['origem']}</td>
           <td>{r['destino']}</td>
-          <td>{urg}{r['mp'] or ''}</td>
-          <td>{r['periodo_operacao'] or '—'}</td>
-          <td>{hor_html}</td>
-          <td>{int(r['quantidade']) if r['quantidade'] else '—'}</td>
-          <td>{r['tipo_veiculo'] or '—'}</td>
-          <td>{r['programacao_vol'] or '—'}</td>
-          <td>{r['pedido'] or '—'}</td>
-          <td>{r['item'] or '—'}</td>
-          <td>{('R$ ' + f"{r['valor_unit']:,.2f}".replace(',','X').replace('.',',').replace('X','.')) if r['valor_unit'] else '—'}</td>
-          <td>{r['troca_nf'] or 'Não'}</td>
-          <td>{r['operacao'] or '—'}</td>
-          <td>{r['transportadora'] or '—'}</td>
+          <td style="font-family:monospace;font-size:11px">{r.get('cod') or '—'}</td>
+          <td style="font-size:11px">{r['produto']}</td>
+          <td style="font-weight:600;color:#155724">{urg_icon}{r.get('mp') or '—'}</td>
+          <td style="white-space:nowrap">{r.get('periodo_operacao') or '—'}</td>
+          <td style="white-space:nowrap">{hor_html}</td>
+          <td style="text-align:center;font-weight:600">{qtd}</td>
+          <td>{r.get('tipo_veiculo') or '—'}</td>
+          <td style="text-align:center;font-weight:600">{vol_fmt}</td>
+          <td style="font-family:monospace;font-size:11px">{r.get('pedido') or '—'}</td>
+          <td style="text-align:center">{r.get('item') or '—'}</td>
+          <td style="white-space:nowrap">{_fmt_val(r.get('valor_unit'))}</td>
+          <td style="text-align:center">{r.get('troca_nf') or 'Não'}</td>
+          <td>{r.get('operacao') or '—'}</td>
+          <td style="font-size:11px;color:#555">{obs_txt or '—'}</td>
+          <td>{r.get('transportadora') or '—'}</td>
         </tr>"""
 
-    obs_block = f"<p style='margin:12px 0'><strong>Observação:</strong> {extra_obs}</p>" if extra_obs else ""
+    obs_block = (f"<tr><td colspan='18' style='padding:8px 12px;background:#f0f7f0;"
+                 f"border-top:2px solid #155724;font-size:12px'>"
+                 f"<strong>Obs. Geral:</strong> {extra_obs}</td></tr>") if extra_obs else ""
+
+    total_qtd = sum(int(r.get('quantidade') or 0) for r in registros)
+    total_vol = sum(float(r.get('programacao_vol') or 0) for r in registros)
+    total_vol_fmt = f"{int(total_vol):,}".replace(',', '.')
+
+    data_emissao = datetime.now().strftime('%d/%m/%Y às %H:%M')
 
     return f"""
-    <html><body style="font-family:Arial,sans-serif;color:#222;font-size:13px">
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="background:#155724;padding:14px 20px">
-          <span style="color:#fff;font-size:17px;font-weight:bold">🌱 Mosaic Supply Chain</span>
-        </td></tr>
-      </table>
-      <div style="padding:16px 20px">
-        <h2 style="color:#155724;margin:0 0 4px">{titulo}</h2>
-        {obs_block}
-      </div>
-      <div style="padding:0 20px 20px">
-        <table border="0" cellpadding="6" cellspacing="0" width="100%"
-               style="border-collapse:collapse;font-size:12px">
-          <thead>
-            <tr style="background:#155724;color:#fff">
-              <th>Data</th><th>Origem</th><th>Destino</th><th>MP</th>
-              <th>Período</th><th>H. Corte</th><th>Qtd</th><th>Tipo</th>
-              <th>Vol. (t)</th><th>Pedido</th><th>Item</th><th>Valor Unit.</th>
-              <th>Troca NF</th><th>Operação</th><th>Transportadora</th>
-            </tr>
-          </thead>
-          <tbody>{linhas}</tbody>
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family:Arial,sans-serif;color:#222;font-size:12px;margin:0;padding:0;background:#f4f6f8">
+
+  <!-- Cabeçalho -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#155724">
+    <tr>
+      <td style="padding:14px 20px">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <span style="color:#fff;font-size:18px;font-weight:bold;letter-spacing:-0.5px">
+                🌱 Mosaic Supply Chain
+              </span><br>
+              <span style="color:rgba(255,255,255,0.75);font-size:11px;letter-spacing:0.5px">
+                PROGRAMAÇÃO DE MATÉRIAS-PRIMAS
+              </span>
+            </td>
+            <td style="text-align:right;vertical-align:top">
+              <span style="color:rgba(255,255,255,0.6);font-size:10px">
+                Emitido em {data_emissao}
+              </span>
+            </td>
+          </tr>
         </table>
-      </div>
-      <p style="padding:0 20px;font-size:10px;color:#888">
-        Gerado automaticamente pelo sistema Mosaic Supply Chain.
-      </p>
-    </body></html>"""
+      </td>
+    </tr>
+  </table>
+
+  <!-- Título e resumo -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-bottom:2px solid #155724">
+    <tr>
+      <td style="padding:12px 20px">
+        <span style="font-size:15px;font-weight:bold;color:#155724">{titulo}</span>
+        &nbsp;&nbsp;
+        <span style="font-size:11px;color:#888;background:#f0f7f0;border:1px solid #c3e6cb;
+                     border-radius:4px;padding:2px 8px">
+          {len(registros)} movimentaç{'ão' if len(registros)==1 else 'ões'} &nbsp;|&nbsp;
+          {total_qtd} veículos &nbsp;|&nbsp; {total_vol_fmt} ton
+        </span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Tabela principal -->
+  <div style="padding:16px 20px">
+    <table border="0" cellpadding="5" cellspacing="0" width="100%"
+           style="border-collapse:collapse;font-size:11px;background:#fff;
+                  border:1px solid #dee2e6;border-radius:4px;overflow:hidden">
+      <thead>
+        <tr style="background:#155724;color:#fff">
+          <th style="padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap">Data</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Origem</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Destino</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Cód</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Produto</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">MP</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap">Período</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap">H. Corte</th>
+          <th style="padding:8px 10px;text-align:center;font-weight:600">Qtd</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Tipo</th>
+          <th style="padding:8px 10px;text-align:center;font-weight:600">Prog. (t)</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Pedido</th>
+          <th style="padding:8px 10px;text-align:center;font-weight:600">Item</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap">Valor Unit.</th>
+          <th style="padding:8px 10px;text-align:center;font-weight:600">Troca NF</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Operação</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Obs</th>
+          <th style="padding:8px 10px;text-align:left;font-weight:600">Transportadora</th>
+        </tr>
+      </thead>
+      <tbody>
+        {linhas}
+        {obs_block}
+        <!-- Rodapé totais -->
+        <tr style="background:#e8f5e9;font-weight:700;border-top:2px solid #155724">
+          <td colspan="8" style="padding:8px 10px;color:#155724">TOTAIS</td>
+          <td style="padding:8px 10px;text-align:center;color:#155724">{total_qtd}</td>
+          <td></td>
+          <td style="padding:8px 10px;text-align:center;color:#155724">{total_vol_fmt}</td>
+          <td colspan="7"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Rodapé -->
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="padding:10px 20px;font-size:10px;color:#999;border-top:1px solid #dee2e6">
+        Gerado automaticamente pelo sistema Mosaic Supply Chain. Este e-mail é informativo.
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>"""
 
 
 # ── EMAIL DE CANCELAMENTO ─────────────────────────────────────────────────────
 def _enviar_email_cancelamento(r_dict):
-    """
-    Dispara email com tema vermelho informando que a programação foi cancelada.
-    r_dict é o to_dict() APÓS a edição (já com status=Cancelado).
-    """
     prog_id  = r_dict.get('id', '—')
     data_fmt = r_dict.get('data_br', '—')
     origem   = r_dict.get('origem', '—')
@@ -422,137 +517,104 @@ def _enviar_email_cancelamento(r_dict):
     horario  = r_dict.get('horario_corte') or '—'
 
     obs_block = (
-        f'<tr><td colspan="2" style="padding:10px 14px;background:#fff5f5;'
-        f'border-left:4px solid #c0392b;font-size:13px;color:#555">'
+        f'<tr><td colspan="2" style="padding:10px 14px;background:#f8f8f8;'
+        f'border-left:3px solid #888;font-size:12px;color:#555">'
         f'<strong>Observações:</strong> {obs}</td></tr>'
     ) if obs else ''
 
     html = f"""
-    <html>
-    <body style="font-family:Arial,sans-serif;color:#222;font-size:13px;margin:0;padding:0">
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family:Arial,sans-serif;color:#222;font-size:13px;margin:0;padding:0;background:#f4f6f8">
 
-      <!-- Cabeçalho vermelho -->
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-          <td style="background:linear-gradient(135deg,#8b0000 0%,#c0392b 100%);
-                     padding:16px 22px">
-            <span style="color:#fff;font-size:18px;font-weight:bold">
-              ❌ Mosaic Supply Chain
-            </span>
-            <span style="color:rgba(255,255,255,0.75);font-size:13px;
-                         display:block;margin-top:3px;letter-spacing:0.5px">
-              CANCELAMENTO DE PROGRAMAÇÃO
-            </span>
-          </td>
-        </tr>
-      </table>
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#4a4a4a">
+    <tr>
+      <td style="padding:14px 20px">
+        <span style="color:#fff;font-size:17px;font-weight:bold">🌱 Mosaic Supply Chain</span><br>
+        <span style="color:rgba(255,255,255,0.65);font-size:11px;letter-spacing:0.5px">
+          CANCELAMENTO DE PROGRAMAÇÃO
+        </span>
+      </td>
+    </tr>
+  </table>
 
-      <!-- Banner de alerta -->
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-          <td style="background:#fff0f0;border-bottom:3px solid #c0392b;
-                     padding:14px 22px">
-            <span style="font-size:22px;font-weight:900;color:#c0392b;
-                         letter-spacing:-0.5px">
-              ⛔ Programação #{prog_id} CANCELADA
-            </span>
-            <div style="color:#888;font-size:12px;margin-top:5px">
-              Cancelado em {datetime.utcnow().strftime('%d/%m/%Y às %H:%M')} UTC
-            </div>
-          </td>
-        </tr>
-      </table>
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-bottom:2px solid #888">
+    <tr>
+      <td style="padding:14px 20px">
+        <span style="font-size:18px;font-weight:800;color:#555;letter-spacing:-0.5px">
+          ✖ Programação #{prog_id} — Cancelada
+        </span>
+        <div style="color:#999;font-size:11px;margin-top:4px">
+          Cancelado em {datetime.utcnow().strftime('%d/%m/%Y às %H:%M')} UTC
+        </div>
+      </td>
+    </tr>
+  </table>
 
-      <!-- Detalhes -->
-      <div style="padding:20px 22px">
-        <table width="100%" cellpadding="0" cellspacing="0"
-               style="border-collapse:collapse;border:1px solid #e0c0c0;border-radius:6px;
-                      overflow:hidden;font-size:13px">
+  <div style="padding:20px">
+    <table width="100%" cellpadding="0" cellspacing="0"
+           style="border-collapse:collapse;border:1px solid #ddd;border-radius:4px;
+                  background:#fff;font-size:13px;max-width:560px">
+      <tr style="background:#f5f5f5">
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee;width:150px">Data</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee;font-weight:600">{data_fmt}</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee">Produto / MP</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee"><strong>{mp}</strong></td>
+      </tr>
+      <tr style="background:#f5f5f5">
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee">Rota</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee">
+          {origem} → {destino}
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee">Quantidade / Tipo</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee;font-family:monospace">{qtd} × {tipo_v}</td>
+      </tr>
+      <tr style="background:#f5f5f5">
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee">Volume (t)</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee;font-family:monospace">{vol}</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee">Período / H. Corte</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee">{periodo} | {horario}</td>
+      </tr>
+      <tr style="background:#f5f5f5">
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee">Pedido / Item</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee;font-family:monospace">{pedido} / {item}</td>
+      </tr>
+      <tr>
+        <td style="padding:9px 14px;font-weight:700;color:#555;border-bottom:1px solid #eee">Transportadora</td>
+        <td style="padding:9px 14px;border-bottom:1px solid #eee">{transp}</td>
+      </tr>
+      <tr style="background:#f5f5f5">
+        <td style="padding:9px 14px;font-weight:700;color:#555;{'border-bottom:1px solid #eee' if obs else ''}">Operação</td>
+        <td style="padding:9px 14px;{'border-bottom:1px solid #eee' if obs else ''}">{operacao}</td>
+      </tr>
+      {obs_block}
+    </table>
+  </div>
 
-          <tr style="background:#fdf0f0">
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0;width:160px">Data</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
-                       font-weight:600;font-size:15px">{data_fmt}</td>
-          </tr>
-          <tr>
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0">Produto / MP</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
-              <strong style="font-size:14px">{mp}</strong>
-            </td>
-          </tr>
-          <tr style="background:#fdf0f0">
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0">Rota</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
-              📦 {origem}
-              <span style="color:#c0392b;font-weight:bold;margin:0 6px">→</span>
-              🏭 {destino}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0">Quantidade / Tipo</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
-                       font-family:monospace">{qtd} × {tipo_v}</td>
-          </tr>
-          <tr style="background:#fdf0f0">
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0">Volume (t)</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
-                       font-family:monospace">{vol}</td>
-          </tr>
-          <tr>
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0">Período / H. Corte</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
-              {periodo} &nbsp;|&nbsp; {horario}
-            </td>
-          </tr>
-          <tr style="background:#fdf0f0">
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0">Pedido / Item</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0;
-                       font-family:monospace">{pedido} / {item}</td>
-          </tr>
-          <tr>
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       border-bottom:1px solid #e8d0d0">Transportadora</td>
-            <td style="padding:10px 14px;border-bottom:1px solid #e8d0d0">
-              🚛 {transp}
-            </td>
-          </tr>
-          <tr style="background:#fdf0f0">
-            <td style="padding:10px 14px;font-weight:700;color:#7a1a1a;
-                       {'border-bottom:1px solid #e8d0d0' if obs else ''}">Operação</td>
-            <td style="padding:10px 14px;
-                       {'border-bottom:1px solid #e8d0d0' if obs else ''}">{operacao}</td>
-          </tr>
-          {obs_block}
-        </table>
-      </div>
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="padding:10px 20px;font-size:10px;color:#aaa;border-top:1px solid #eee">
+        Cancelamento registrado automaticamente pelo sistema Mosaic Supply Chain.
+      </td>
+    </tr>
+  </table>
 
-      <!-- Rodapé -->
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-          <td style="background:#fdf0f0;border-top:1px solid #e8d0d0;
-                     padding:10px 22px;font-size:10px;color:#999">
-            Cancelamento registrado automaticamente pelo sistema Mosaic Supply Chain.
-          </td>
-        </tr>
-      </table>
+</body>
+</html>"""
 
-    </body>
-    </html>"""
-
-    assunto = f"[Mosaic] ❌ CANCELADO — Prog. #{prog_id} — {data_fmt} — {mp}"
+    assunto = f"[Mosaic] Cancelado — Prog. #{prog_id} — {data_fmt} — {mp}"
     _enviar_smtp(html, assunto)
 
 
 # ── EMAIL DE ALTERAÇÃO ────────────────────────────────────────────────────────
 def _enviar_email_alteracao(antes, depois):
-    """Envia um email de complemento/alteração destacando os campos modificados."""
     campos_label = {
         'data_br': 'Data', 'origem': 'Origem', 'destino': 'Destino',
         'mp': 'MP', 'produto': 'Produto', 'cod': 'Cód.',
@@ -575,7 +637,7 @@ def _enviar_email_alteracao(antes, depois):
             linhas_diff += f"""
             <tr>
               <td style="padding:6px 10px;border-bottom:1px solid #eee;font-weight:600">{label}</td>
-              <td style="padding:6px 10px;border-bottom:1px solid #eee;color:#c0392b;
+              <td style="padding:6px 10px;border-bottom:1px solid #eee;color:#999;
                          text-decoration:line-through">{v_antes or '—'}</td>
               <td style="padding:6px 10px;border-bottom:1px solid #eee;color:#155724;
                          font-weight:bold">{v_depois or '—'}</td>
@@ -584,40 +646,42 @@ def _enviar_email_alteracao(antes, depois):
     if not linhas_diff:
         return
 
-    data_fmt   = depois.get('data_br', '—')
-    origem     = depois.get('origem', '—')
-    destino    = depois.get('destino', '—')
-    mp         = depois.get('mp') or depois.get('produto', '—')
-    prog_id    = depois.get('id', '—')
+    data_fmt = depois.get('data_br', '—')
+    mp       = depois.get('mp') or depois.get('produto', '—')
+    prog_id  = depois.get('id', '—')
 
     html = f"""
-    <html><body style="font-family:Arial,sans-serif;color:#222;font-size:13px">
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="background:#155724;padding:14px 20px">
-          <span style="color:#fff;font-size:17px;font-weight:bold">🌱 Mosaic Supply Chain</span>
-        </td></tr>
-      </table>
-      <div style="padding:16px 20px">
-        <h2 style="color:#c0392b;margin:0 0 4px">⚠️ Alteração na Programação #{prog_id}</h2>
-        <p style="color:#555;margin:4px 0 16px">
-          <strong>{data_fmt}</strong> · {origem} → {destino} · <strong>{mp}</strong>
-        </p>
-        <table border="0" cellpadding="0" cellspacing="0" width="100%"
-               style="border-collapse:collapse;font-size:13px;max-width:600px">
-          <thead>
-            <tr style="background:#f4f4f4">
-              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Campo</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Antes</th>
-              <th style="padding:8px 10px;text-align:left;border-bottom:2px solid #ddd">Depois</th>
-            </tr>
-          </thead>
-          <tbody>{linhas_diff}</tbody>
-        </table>
-      </div>
-      <p style="padding:0 20px;font-size:10px;color:#888">
-        Alteração registrada automaticamente pelo sistema Mosaic Supply Chain.
-      </p>
-    </body></html>"""
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family:Arial,sans-serif;color:#222;font-size:13px;margin:0;padding:0;background:#f4f6f8">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#155724">
+    <tr><td style="padding:14px 20px">
+      <span style="color:#fff;font-size:17px;font-weight:bold">🌱 Mosaic Supply Chain</span>
+    </td></tr>
+  </table>
+  <div style="padding:16px 20px;background:#fff;border-bottom:1px solid #dee2e6">
+    <h2 style="color:#555;margin:0 0 4px;font-size:16px">⚠ Alteração na Programação #{prog_id}</h2>
+    <p style="color:#888;margin:4px 0;font-size:12px">{data_fmt} · {depois.get('origem','—')} → {depois.get('destino','—')} · <strong>{mp}</strong></p>
+  </div>
+  <div style="padding:16px 20px">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+           style="border-collapse:collapse;font-size:12px;max-width:560px;background:#fff;border:1px solid #dee2e6">
+      <thead>
+        <tr style="background:#f4f4f4">
+          <th style="padding:8px 10px;text-align:left;border-bottom:1px solid #ddd">Campo</th>
+          <th style="padding:8px 10px;text-align:left;border-bottom:1px solid #ddd">Antes</th>
+          <th style="padding:8px 10px;text-align:left;border-bottom:1px solid #ddd">Depois</th>
+        </tr>
+      </thead>
+      <tbody>{linhas_diff}</tbody>
+    </table>
+  </div>
+  <p style="padding:0 20px;font-size:10px;color:#aaa">
+    Alteração registrada automaticamente pelo sistema Mosaic Supply Chain.
+  </p>
+</body>
+</html>"""
 
     assunto = f"[Mosaic] Alteração na Programação #{prog_id} — {data_fmt} — {mp}"
     _enviar_smtp(html, assunto)
@@ -625,16 +689,18 @@ def _enviar_email_alteracao(antes, depois):
 
 # ── HELPER ──────────────────────────────────────────────────────────────────
 def _to_float(v):
-    if v is None or v == '':
+    if v is None or v == '' or v == 'None':
         return None
     try:
-        return float(v)
+        cleaned = str(v).replace(',', '.').strip()
+        if not cleaned:
+            return None
+        return float(cleaned)
     except (ValueError, TypeError):
         return None
 
 
 def _apply_payload(obj, payload):
-    """Aplica campos do payload em um objeto Programacao."""
     data_str = payload.get('data')
     if data_str:
         obj.data = datetime.strptime(data_str, '%Y-%m-%d').date()
@@ -686,14 +752,24 @@ def dashboard():
     amanha = hoje + timedelta(days=1)
 
     total        = Programacao.query.count()
-    pendentes    = Programacao.query.filter_by(status='Pendente').count()
     em_andamento = Programacao.query.filter_by(status='Em andamento').count()
     confirmados  = Programacao.query.filter_by(status='Confirmado').count()
+    cancelados   = Programacao.query.filter_by(status='Cancelado').count()
     urgentes     = Programacao.query.filter_by(urgente=True).count()
-    hoje_c       = Programacao.query.filter_by(data=hoje).count()
-    amanha_c     = Programacao.query.filter_by(data=amanha).count()
+
+    # Hoje
+    hoje_c   = Programacao.query.filter_by(data=hoje).count()
+    vol_hoje = db.session.query(func.sum(Programacao.programacao_vol)).filter(
+        Programacao.data == hoje).scalar() or 0
+
+    # Amanhã
+    amanha_c   = Programacao.query.filter_by(data=amanha).count()
+    vol_amanha = db.session.query(func.sum(Programacao.programacao_vol)).filter(
+        Programacao.data == amanha).scalar() or 0
+
+    # Volume total geral
     vol_res      = db.session.query(func.sum(Programacao.programacao_vol)).scalar()
-    volume_total = round(vol_res or 0, 2)
+    volume_total = round(vol_res or 0, 1)
 
     def agrupar(col, label, limit=6):
         rows = (db.session.query(col, func.count(Programacao.id))
@@ -701,9 +777,16 @@ def dashboard():
         return [{label: v or '—', 'count': c} for v, c in rows]
 
     return jsonify({
-        'total': total, 'pendentes': pendentes, 'em_andamento': em_andamento,
-        'confirmados': confirmados, 'urgentes': urgentes, 'hoje': hoje_c,
-        'amanha': amanha_c, 'volume_total': volume_total,
+        'total': total,
+        'em_andamento': em_andamento,
+        'confirmados': confirmados,
+        'cancelados': cancelados,
+        'urgentes': urgentes,
+        'hoje': hoje_c,
+        'vol_hoje': round(vol_hoje, 1),
+        'amanha': amanha_c,
+        'vol_amanha': round(vol_amanha, 1),
+        'volume_total': volume_total,
         'por_operacao':       agrupar(Programacao.operacao,        'operacao'),
         'por_destino':        agrupar(Programacao.destino,         'destino'),
         'por_transportadora': agrupar(Programacao.transportadora,  'transportadora'),
@@ -748,7 +831,7 @@ def criar():
     nova = Programacao(
         data=data_obj, origem=p.get('origem'), destino=p.get('destino'),
         produto=p.get('produto'), troca_nf=p.get('troca_nf', 'Não'),
-        urgente=bool(p.get('urgente', False)), status=p.get('status', 'Pendente'),
+        urgente=bool(p.get('urgente', False)), status=p.get('status', 'Em andamento'),
     )
     _apply_payload(nova, p)
     db.session.add(nova)
@@ -760,32 +843,23 @@ def criar():
 def editar(id):
     r = Programacao.query.get_or_404(id)
     p = request.json or {}
-
-    # Captura snapshot ANTES da edição
     antes = r.to_dict()
     status_antes = antes.get('status', '')
-
     _apply_payload(r, p)
     db.session.commit()
-
     depois = r.to_dict()
     status_depois = depois.get('status', '')
 
-    # ── Lógica de email automático ──────────────────────────────────────────
-    # 1. Cancelamento: status mudou para "Cancelado" → email vermelho específico
     if status_antes != 'Cancelado' and status_depois == 'Cancelado':
         try:
             _enviar_email_cancelamento(depois)
         except Exception:
-            pass  # falha silenciosa — não bloqueia o save
-
-    # 2. Outras alterações (exceto cancelamento, já tratado acima)
+            pass
     elif p.get('notificar_alteracao', False):
         try:
             _enviar_email_alteracao(antes, depois)
         except Exception:
             pass
-
     return jsonify({'success': True})
 
 
@@ -800,10 +874,10 @@ def deletar(id):
 # ── EMAIL PROGRAMAÇÃO ─────────────────────────────────────────────────────────
 @app.route('/api/enviar-email', methods=['POST'])
 def enviar_email():
-    payload     = request.json or {}
-    data_ref    = payload.get('data')
-    ids_sel     = payload.get('ids')
-    extra_obs   = payload.get('obs', '')
+    payload   = request.json or {}
+    data_ref  = payload.get('data')
+    ids_sel   = payload.get('ids')
+    extra_obs = payload.get('obs', '')
 
     if not data_ref:
         return jsonify({'success': False, 'error': 'Data não informada'}), 400
@@ -820,9 +894,10 @@ def enviar_email():
         return jsonify({'success': False, 'error': 'Nenhuma programação para esta data'}), 404
 
     data_fmt  = d.strftime('%d/%m/%Y')
-    titulo    = f"Programação de MP — {data_fmt}"
+    dia_semana = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'][d.weekday()]
+    titulo    = f"Programação de MP — {dia_semana}, {data_fmt}"
     html_body = _build_tabela_html([r.to_dict() for r in registros], titulo, extra_obs)
-    assunto   = f"[Mosaic] Programação de MP — {data_fmt}"
+    assunto   = f"[Mosaic] Programação de MP — {dia_semana} {data_fmt}"
 
     try:
         _enviar_smtp(html_body, assunto)
